@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'buttons.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 class MyCalulator extends StatefulWidget {
   const MyCalulator({super.key});
@@ -7,6 +8,10 @@ class MyCalulator extends StatefulWidget {
   @override
   State<MyCalulator> createState() => _CalulatorPageState();
 }
+
+var question = '';
+var answer = '0';
+bool autoClear = false;
 
 class _CalulatorPageState extends State<MyCalulator> {
   final List<String> buttons = [
@@ -38,7 +43,29 @@ class _CalulatorPageState extends State<MyCalulator> {
       backgroundColor: const Color(0xFF469d89),
       body: Column(
         children: <Widget>[
-          Expanded(child: Container()),
+          Expanded(
+              child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                const SizedBox(height: 50),
+                Container(
+                    padding: const EdgeInsets.all(20),
+                    alignment: Alignment.centerLeft,
+                    child: Text(question,
+                        style: const TextStyle(
+                            fontSize: 50, color: Colors.white))),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    answer,
+                    style: const TextStyle(fontSize: 62, color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+          )),
           Expanded(
               flex: 2,
               child: Container(
@@ -51,6 +78,12 @@ class _CalulatorPageState extends State<MyCalulator> {
                     itemBuilder: (context, index) {
                       if (buttons[index] == 'DEL') {
                         return MyButton(
+                            buttontapped: () {
+                              setState(() {
+                                question =
+                                    question.substring(0, question.length - 1);
+                              });
+                            },
                             color: const Color(0xFFee6055),
                             buttonText: buttons[index],
                             textColor: Colors.black);
@@ -59,19 +92,52 @@ class _CalulatorPageState extends State<MyCalulator> {
                           buttons[index] == 'x' ||
                           buttons[index] == '-' ||
                           buttons[index] == '+' ||
-                          buttons[index] == '+' ||
-                          buttons[index] == '=') {
+                          buttons[index] == '+') {
                         return MyButton(
+                            buttontapped: () {
+                              setState(() {
+                                question += buttons[index];
+                              });
+                            },
                             color: const Color(0xFF248277),
                             buttonText: buttons[index],
                             textColor: Colors.white);
                       } else if (buttons[index] == 'AC') {
                         return MyButton(
+                            buttontapped: () {
+                              setState(() {
+                                question = '';
+                                answer = '0';
+                              });
+                            },
                             color: const Color(0xFF96e072),
+                            buttonText: buttons[index],
+                            textColor: Colors.black);
+                      } else if (buttons[index] == '=') {
+                        return MyButton(
+                            buttontapped: () {
+                              setState(() {
+                                equalButton();
+                              });
+                            },
+                            color: const Color(0xFF16db65),
                             buttonText: buttons[index],
                             textColor: Colors.black);
                       } else {
                         return MyButton(
+                            buttontapped: () {
+                              if (autoClear == false) {
+                                setState(() {
+                                  question += buttons[index];
+                                });
+                              } else {
+                                setState(() {
+                                  question = '';
+                                  question += buttons[index];
+                                  autoClear = false;
+                                });
+                              }
+                            },
                             color: const Color.fromARGB(255, 172, 202, 195),
                             buttonText: buttons[index],
                             textColor: Colors.black);
@@ -82,4 +148,17 @@ class _CalulatorPageState extends State<MyCalulator> {
       ),
     );
   }
+}
+
+void equalButton() {
+  String finalQuestion = question;
+  finalQuestion = finalQuestion.replaceAll('x', '*');
+  autoClear = true;
+
+  Parser p = Parser();
+  Expression exp = p.parse(finalQuestion);
+  ContextModel cm = ContextModel();
+  double eval = exp.evaluate(EvaluationType.REAL, cm);
+
+  answer = eval.toString();
 }
