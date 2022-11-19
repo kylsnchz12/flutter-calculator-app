@@ -11,7 +11,6 @@ class MyCalulator extends StatefulWidget {
 
 var question = '';
 var answer = '0';
-bool autoClear = false;
 
 class _CalulatorPageState extends State<MyCalulator> {
   final List<String> buttons = [
@@ -95,9 +94,20 @@ class _CalulatorPageState extends State<MyCalulator> {
                           buttons[index] == '+') {
                         return MyButton(
                             buttontapped: () {
-                              setState(() {
-                                question += buttons[index];
-                              });
+                              if (answer == '0') {
+                                setState(() {
+                                  question += buttons[index];
+                                });
+                              } else if (question == '') {
+                                setState(() {
+                                  question = answer;
+                                  question += buttons[index];
+                                });
+                              } else {
+                                setState(() {
+                                  question += buttons[index];
+                                });
+                              }
                             },
                             color: const Color(0xFF248277),
                             buttonText: buttons[index],
@@ -118,6 +128,7 @@ class _CalulatorPageState extends State<MyCalulator> {
                             buttontapped: () {
                               setState(() {
                                 equalButton();
+                                question = '';
                               });
                             },
                             color: const Color(0xFF16db65),
@@ -126,17 +137,9 @@ class _CalulatorPageState extends State<MyCalulator> {
                       } else {
                         return MyButton(
                             buttontapped: () {
-                              if (autoClear == false) {
-                                setState(() {
-                                  question += buttons[index];
-                                });
-                              } else {
-                                setState(() {
-                                  question = '';
-                                  question += buttons[index];
-                                  autoClear = false;
-                                });
-                              }
+                              setState(() {
+                                question += buttons[index];
+                              });
                             },
                             color: const Color.fromARGB(255, 172, 202, 195),
                             buttonText: buttons[index],
@@ -153,12 +156,17 @@ class _CalulatorPageState extends State<MyCalulator> {
 void equalButton() {
   String finalQuestion = question;
   finalQuestion = finalQuestion.replaceAll('x', '*');
-  autoClear = true;
 
   Parser p = Parser();
   Expression exp = p.parse(finalQuestion);
   ContextModel cm = ContextModel();
   double eval = exp.evaluate(EvaluationType.REAL, cm);
 
-  answer = eval.toString();
+  if (eval % 1 == 0) {
+    int i;
+    i = eval.toInt();
+    answer = i.toString();
+  } else {
+    answer = eval.toString();
+  }
 }
