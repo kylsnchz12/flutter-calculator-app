@@ -94,7 +94,12 @@ class _CalulatorPageState extends State<MyCalulator> {
                           buttons[index] == '+') {
                         return MyButton(
                             buttontapped: () {
-                              if (answer == '0') {
+                              if (question == '' && answer == '0') {
+                                setState(() {
+                                  question = '0';
+                                  question += buttons[index];
+                                });
+                              } else if (answer == '0') {
                                 setState(() {
                                   question += buttons[index];
                                 });
