@@ -11,7 +11,6 @@ class MyCalulator extends StatefulWidget {
 
 var question = '';
 var answer = '0';
-int operatorCounter = 0;
 
 class _CalulatorPageState extends State<MyCalulator> {
   final List<String> buttons = [
@@ -91,17 +90,12 @@ class _CalulatorPageState extends State<MyCalulator> {
                           buttons[index] == '-' ||
                           buttons[index] == '+' ||
                           buttons[index] == '+') {
-                        operatorCounter += 1;
                         return MyButton(
                             buttontapped: () {
                               if (question == '' && answer == '0') {
                                 setState(() {
                                   question = '0';
                                   question += buttons[index];
-                                });
-                              } else if (operatorCounter == 2) {
-                                setState(() {
-                                  question = 'error';
                                 });
                               } else if (answer == '0') {
                                 setState(() {
@@ -122,7 +116,6 @@ class _CalulatorPageState extends State<MyCalulator> {
                             buttonText: buttons[index],
                             textColor: Colors.white);
                       } else if (buttons[index] == 'AC') {
-                        operatorCounter = 0;
                         return MyButton(
                             buttontapped: () {
                               setState(() {
@@ -134,7 +127,6 @@ class _CalulatorPageState extends State<MyCalulator> {
                             buttonText: buttons[index],
                             textColor: Colors.black);
                       } else if (buttons[index] == '=') {
-                        operatorCounter = 0;
                         return MyButton(
                             buttontapped: () {
                               setState(() {
