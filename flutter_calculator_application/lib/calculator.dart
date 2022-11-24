@@ -46,7 +46,7 @@ class _CalulatorPageState extends State<MyCalulator> {
               child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              const SizedBox(height: 50),
+              const SizedBox(height: 55),
               Container(
                   padding: const EdgeInsets.all(20),
                   alignment: Alignment.centerLeft,
